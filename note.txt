@@ -1,2 +1,0 @@
-to run this project on local
-- install golang-migrate first

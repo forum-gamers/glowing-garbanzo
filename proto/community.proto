@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package community;
+
+option go_package = "./generated/community";
+
+message CreateCommunityInput {
+  string name = 1;
+  string imageUrl = 2;
+  string imageId = 3;
+  string desc = 4;
+}
+
+message Community {
+  string id = 1;
+  string name = 2;
+  string imageUrl = 3;
+  string imageId = 4;
+  string description = 5;
+  string owner = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+}
+
+service CommunityService {
+  rpc CreateCommunity(CreateCommunityInput) returns (Community) {}
+}

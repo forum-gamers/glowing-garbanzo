@@ -21,6 +21,8 @@ func (i *InterceptorImpl) GetUserFromCtx(ctx context.Context) user.User {
 			user.Id = val.(string)
 		case "accountType":
 			user.AccountType = val.(string)
+		case "username":
+			user.Username = val.(string)
 		default:
 			continue
 		}
