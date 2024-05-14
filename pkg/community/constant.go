@@ -14,6 +14,7 @@ type CommunityRepo interface {
 	DeleteById(ctx context.Context, id string) error
 	UpdateImage(ctx context.Context, id, imageUrl, imageId string) error
 	UpdateBackground(ctx context.Context, id, backgroundUrl, backgroundId string) error
+	UpdateDesc(ctx context.Context, id, text string) error
 }
 
 type CommunityRepoImpl struct {

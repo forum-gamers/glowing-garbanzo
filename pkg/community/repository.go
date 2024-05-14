@@ -100,3 +100,8 @@ func (r *CommunityRepoImpl) UpdateBackground(ctx context.Context, id, background
 	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("UPDATE %s SET backgroundUrl = $1, backGroundId = $2 WHERE id = $3", base.COMMUNITY), backgroundUrl, backgroundId, id)
 	return err
 }
+
+func (r *CommunityRepoImpl) UpdateDesc(ctx context.Context, id, text string) error {
+	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("UPDATE %s SET description = $1 WHERE id = $2", base.COMMUNITY), text, id)
+	return err
+}

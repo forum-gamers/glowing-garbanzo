@@ -23,6 +23,7 @@ const (
 	CommunityService_DeleteCommunity_FullMethodName  = "/community.CommunityService/DeleteCommunity"
 	CommunityService_UpdateImage_FullMethodName      = "/community.CommunityService/UpdateImage"
 	CommunityService_UpdateBackground_FullMethodName = "/community.CommunityService/UpdateBackground"
+	CommunityService_UpdateDesc_FullMethodName       = "/community.CommunityService/UpdateDesc"
 )
 
 // CommunityServiceClient is the client API for CommunityService service.
@@ -33,6 +34,7 @@ type CommunityServiceClient interface {
 	DeleteCommunity(ctx context.Context, in *CommunityIdInput, opts ...grpc.CallOption) (*ImageIdResp, error)
 	UpdateImage(ctx context.Context, in *UpdateImgInput, opts ...grpc.CallOption) (*Community, error)
 	UpdateBackground(ctx context.Context, in *UpdateImgInput, opts ...grpc.CallOption) (*Community, error)
+	UpdateDesc(ctx context.Context, in *TextInput, opts ...grpc.CallOption) (*Community, error)
 }
 
 type communityServiceClient struct {
@@ -79,6 +81,15 @@ func (c *communityServiceClient) UpdateBackground(ctx context.Context, in *Updat
 	return out, nil
 }
 
+func (c *communityServiceClient) UpdateDesc(ctx context.Context, in *TextInput, opts ...grpc.CallOption) (*Community, error) {
+	out := new(Community)
+	err := c.cc.Invoke(ctx, CommunityService_UpdateDesc_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommunityServiceServer is the server API for CommunityService service.
 // All implementations must embed UnimplementedCommunityServiceServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type CommunityServiceServer interface {
 	DeleteCommunity(context.Context, *CommunityIdInput) (*ImageIdResp, error)
 	UpdateImage(context.Context, *UpdateImgInput) (*Community, error)
 	UpdateBackground(context.Context, *UpdateImgInput) (*Community, error)
+	UpdateDesc(context.Context, *TextInput) (*Community, error)
 	mustEmbedUnimplementedCommunityServiceServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedCommunityServiceServer) UpdateImage(context.Context, *UpdateI
 }
 func (UnimplementedCommunityServiceServer) UpdateBackground(context.Context, *UpdateImgInput) (*Community, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBackground not implemented")
+}
+func (UnimplementedCommunityServiceServer) UpdateDesc(context.Context, *TextInput) (*Community, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDesc not implemented")
 }
 func (UnimplementedCommunityServiceServer) mustEmbedUnimplementedCommunityServiceServer() {}
 
@@ -191,6 +206,24 @@ func _CommunityService_UpdateBackground_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommunityService_UpdateDesc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TextInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).UpdateDesc(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_UpdateDesc_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).UpdateDesc(ctx, req.(*TextInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommunityService_ServiceDesc is the grpc.ServiceDesc for CommunityService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var CommunityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateBackground",
 			Handler:    _CommunityService_UpdateBackground_Handler,
+		},
+		{
+			MethodName: "UpdateDesc",
+			Handler:    _CommunityService_UpdateDesc_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -152,3 +152,31 @@ func (s *CommunityService) UpdateBackground(ctx context.Context, in *protobuf.Up
 		BackgroundId:  in.Id,
 	}, nil
 }
+
+func (s *CommunityService) UpdateDesc(ctx context.Context, in *protobuf.TextInput) (*protobuf.Community, error) {
+	data, err := s.CommunityRepo.FindById(ctx, in.CommunityId)
+	if err != nil {
+		return nil, err
+	}
+
+	id := s.GetUser(ctx).Id
+	if data.Owner != id {
+		return nil, status.Error(codes.PermissionDenied, "Forbidden")
+	}
+
+	if err := s.CommunityRepo.UpdateDesc(ctx, data.Id, in.Text); err != nil {
+		return nil, err
+	}
+	return &protobuf.Community{
+		Id:            data.Id,
+		Name:          data.Name,
+		ImageUrl:      data.ImageUrl,
+		ImageId:       data.ImageId,
+		Description:   in.Text,
+		CreatedAt:     data.CreatedAt.String(),
+		UpdatedAt:     data.UpdatedAt.String(),
+		Owner:         data.Owner,
+		BackgroundUrl: data.BackgroundUrl,
+		BackgroundId:  data.BackgroundId,
+	}, nil
+}
