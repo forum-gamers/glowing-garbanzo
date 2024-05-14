@@ -120,3 +120,35 @@ func (s *CommunityService) UpdateImage(ctx context.Context, in *protobuf.UpdateI
 		BackgroundId:  data.BackgroundId,
 	}, nil
 }
+
+func (s *CommunityService) UpdateBackground(ctx context.Context, in *protobuf.UpdateImgInput) (*protobuf.Community, error) {
+	if in.Url == "" || in.Id == "" || in.CommunityId == "" {
+		return nil, status.Error(codes.InvalidArgument, "invalid argument")
+	}
+
+	data, err := s.CommunityRepo.FindById(ctx, in.CommunityId)
+	if err != nil {
+		return nil, err
+	}
+
+	id := s.GetUser(ctx).Id
+	if data.Owner != id {
+		return nil, status.Error(codes.PermissionDenied, "Forbidden")
+	}
+
+	if err := s.CommunityRepo.UpdateBackground(ctx, data.Id, in.Url, in.Id); err != nil {
+		return nil, err
+	}
+	return &protobuf.Community{
+		Id:            data.Id,
+		Name:          data.Name,
+		ImageUrl:      data.ImageUrl,
+		ImageId:       data.ImageId,
+		Description:   data.Description,
+		CreatedAt:     data.CreatedAt.String(),
+		UpdatedAt:     data.UpdatedAt.String(),
+		Owner:         data.Owner,
+		BackgroundUrl: in.Url,
+		BackgroundId:  in.Id,
+	}, nil
+}

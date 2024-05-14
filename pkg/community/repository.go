@@ -95,3 +95,8 @@ func (r *CommunityRepoImpl) UpdateImage(ctx context.Context, id, imageUrl, image
 	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("UPDATE %s SET imageUrl = $1, imageId = $2 WHERE id = $3", base.COMMUNITY), imageUrl, imageId, id)
 	return err
 }
+
+func (r *CommunityRepoImpl) UpdateBackground(ctx context.Context, id, backgroundUrl, backgroundId string) error {
+	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("UPDATE %s SET backgroundUrl = $1, backGroundId = $2 WHERE id = $3", base.COMMUNITY), backgroundUrl, backgroundId, id)
+	return err
+}
