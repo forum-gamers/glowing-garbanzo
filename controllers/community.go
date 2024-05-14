@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	protobuf "github.com/forum-gamers/glowing-garbanzo/generated/community"
@@ -100,14 +101,27 @@ func (s *CommunityService) DeleteCommunity(ctx context.Context, in *protobuf.Com
 	}
 
 	me := s.GetUser(ctx)
-	if exists.Owner != me.Id || me.AccountType != user.ADMIN {
+	if exists.Owner != me.Id && me.AccountType != user.ADMIN {
 		return nil, status.Error(codes.PermissionDenied, "Forbidden")
 	}
 
-	if err := s.CommunityRepo.DeleteById(ctx, in.CommunityId); err != nil {
+	tx, err := s.CommunityRepo.StartTransaction(ctx, nil)
+	if err != nil {
+		tx.Rollback()
+		return nil, status.Error(codes.Unavailable, base.DB_UNAVAILABLE)
+	}
+
+	if _, err := tx.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE communityId = $1", base.MEMBER), in.CommunityId); err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
+	if _, err := tx.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE id = $1", base.COMMUNITY), in.CommunityId); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
 	return &protobuf.ImageIdResp{
 		ImageId:      exists.ImageId,
 		BackgroundId: exists.BackgroundId,

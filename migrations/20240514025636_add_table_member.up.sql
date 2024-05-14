@@ -1,6 +1,6 @@
 CREATE TABLE Member (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4() ,
-    communityId UUID REFERENCES Community(id),
+    communityId UUID REFERENCES Community(id) ON DELETE CASCADE,
     userId VARCHAR(150),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
