@@ -90,3 +90,8 @@ func (r *CommunityRepoImpl) FindById(ctx context.Context, id string) (result Com
 func (r *CommunityRepoImpl) DeleteById(ctx context.Context, id string) error {
 	return r.BaseRepo.DeleteById(ctx, base.COMMUNITY, id)
 }
+
+func (r *CommunityRepoImpl) UpdateImage(ctx context.Context, id, imageUrl, imageId string) error {
+	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("UPDATE %s SET imageUrl = $1, imageId = $2 WHERE id = $3", base.COMMUNITY), imageUrl, imageId, id)
+	return err
+}

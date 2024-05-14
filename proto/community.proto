@@ -35,7 +35,15 @@ message CommunityIdInput {
   string communityId = 1;
 }
 
+message UpdateImgInput {
+  string url = 1;
+  string id = 2;
+  string communityId = 3;
+}
+
 service CommunityService {
   rpc CreateCommunity(CreateCommunityInput) returns (Community) {}
   rpc DeleteCommunity(CommunityIdInput) returns (ImageIdResp) {}
+  rpc UpdateImage(UpdateImgInput) returns (Community) {}
+  rpc UpdateBackground(UpdateImgInput) returns (Community) {}
 }

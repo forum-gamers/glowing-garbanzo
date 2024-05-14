@@ -12,6 +12,7 @@ type CommunityRepo interface {
 	Create(ctx context.Context, data *Community) error
 	FindById(ctx context.Context, id string) (Community, error)
 	DeleteById(ctx context.Context, id string) error
+	UpdateImage(ctx context.Context, id, imageUrl, imageId string) error
 }
 
 type CommunityRepoImpl struct {

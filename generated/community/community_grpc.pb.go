@@ -19,8 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CommunityService_CreateCommunity_FullMethodName = "/community.CommunityService/CreateCommunity"
-	CommunityService_DeleteCommunity_FullMethodName = "/community.CommunityService/DeleteCommunity"
+	CommunityService_CreateCommunity_FullMethodName  = "/community.CommunityService/CreateCommunity"
+	CommunityService_DeleteCommunity_FullMethodName  = "/community.CommunityService/DeleteCommunity"
+	CommunityService_UpdateImage_FullMethodName      = "/community.CommunityService/UpdateImage"
+	CommunityService_UpdateBackground_FullMethodName = "/community.CommunityService/UpdateBackground"
 )
 
 // CommunityServiceClient is the client API for CommunityService service.
@@ -29,6 +31,8 @@ const (
 type CommunityServiceClient interface {
 	CreateCommunity(ctx context.Context, in *CreateCommunityInput, opts ...grpc.CallOption) (*Community, error)
 	DeleteCommunity(ctx context.Context, in *CommunityIdInput, opts ...grpc.CallOption) (*ImageIdResp, error)
+	UpdateImage(ctx context.Context, in *UpdateImgInput, opts ...grpc.CallOption) (*Community, error)
+	UpdateBackground(ctx context.Context, in *UpdateImgInput, opts ...grpc.CallOption) (*Community, error)
 }
 
 type communityServiceClient struct {
@@ -57,12 +61,32 @@ func (c *communityServiceClient) DeleteCommunity(ctx context.Context, in *Commun
 	return out, nil
 }
 
+func (c *communityServiceClient) UpdateImage(ctx context.Context, in *UpdateImgInput, opts ...grpc.CallOption) (*Community, error) {
+	out := new(Community)
+	err := c.cc.Invoke(ctx, CommunityService_UpdateImage_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *communityServiceClient) UpdateBackground(ctx context.Context, in *UpdateImgInput, opts ...grpc.CallOption) (*Community, error) {
+	out := new(Community)
+	err := c.cc.Invoke(ctx, CommunityService_UpdateBackground_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommunityServiceServer is the server API for CommunityService service.
 // All implementations must embed UnimplementedCommunityServiceServer
 // for forward compatibility
 type CommunityServiceServer interface {
 	CreateCommunity(context.Context, *CreateCommunityInput) (*Community, error)
 	DeleteCommunity(context.Context, *CommunityIdInput) (*ImageIdResp, error)
+	UpdateImage(context.Context, *UpdateImgInput) (*Community, error)
+	UpdateBackground(context.Context, *UpdateImgInput) (*Community, error)
 	mustEmbedUnimplementedCommunityServiceServer()
 }
 
@@ -75,6 +99,12 @@ func (UnimplementedCommunityServiceServer) CreateCommunity(context.Context, *Cre
 }
 func (UnimplementedCommunityServiceServer) DeleteCommunity(context.Context, *CommunityIdInput) (*ImageIdResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCommunity not implemented")
+}
+func (UnimplementedCommunityServiceServer) UpdateImage(context.Context, *UpdateImgInput) (*Community, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateImage not implemented")
+}
+func (UnimplementedCommunityServiceServer) UpdateBackground(context.Context, *UpdateImgInput) (*Community, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBackground not implemented")
 }
 func (UnimplementedCommunityServiceServer) mustEmbedUnimplementedCommunityServiceServer() {}
 
@@ -125,6 +155,42 @@ func _CommunityService_DeleteCommunity_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommunityService_UpdateImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateImgInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).UpdateImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_UpdateImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).UpdateImage(ctx, req.(*UpdateImgInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommunityService_UpdateBackground_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateImgInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).UpdateBackground(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_UpdateBackground_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).UpdateBackground(ctx, req.(*UpdateImgInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommunityService_ServiceDesc is the grpc.ServiceDesc for CommunityService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +205,14 @@ var CommunityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCommunity",
 			Handler:    _CommunityService_DeleteCommunity_Handler,
+		},
+		{
+			MethodName: "UpdateImage",
+			Handler:    _CommunityService_UpdateImage_Handler,
+		},
+		{
+			MethodName: "UpdateBackground",
+			Handler:    _CommunityService_UpdateBackground_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
