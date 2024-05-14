@@ -7,6 +7,7 @@ import (
 
 type BaseRepo interface {
 	CreateData(ctx context.Context, table DBNAME, data any) (string, error)
+	DeleteById(ctx context.Context, table DBNAME, id string) error
 }
 
 type BaseRepoImpl struct{ Db *sql.DB }

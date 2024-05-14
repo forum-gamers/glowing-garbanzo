@@ -2,6 +2,7 @@ package base
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	"github.com/forum-gamers/glowing-garbanzo/database"
@@ -27,4 +28,9 @@ func (r *BaseRepoImpl) CreateData(ctx context.Context, table DBNAME, data any) (
 		return
 	}
 	return
+}
+
+func (r *BaseRepoImpl) DeleteById(ctx context.Context, table DBNAME, id string) error {
+	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE id = $1", table), id)
+	return err
 }

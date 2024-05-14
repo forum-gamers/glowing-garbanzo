@@ -10,6 +10,8 @@ import (
 type CommunityRepo interface {
 	FindByName(ctx context.Context, name string) (Community, error)
 	Create(ctx context.Context, data *Community) error
+	FindById(ctx context.Context, id string) (Community, error)
+	DeleteById(ctx context.Context, id string) error
 }
 
 type CommunityRepoImpl struct {

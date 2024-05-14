@@ -62,3 +62,28 @@ func (s *CommunityService) CreateCommunity(ctx context.Context, req *protobuf.Cr
 		BackgroundId:  payload.BackgroundId,
 	}, nil
 }
+
+func (s *CommunityService) DeleteCommunity(ctx context.Context, in *protobuf.CommunityIdInput) (*protobuf.ImageIdResp, error) {
+	if in.CommunityId == "" {
+		return nil, status.Error(codes.InvalidArgument, "communityId is required")
+	}
+
+	exists, err := s.CommunityRepo.FindById(ctx, in.CommunityId)
+	if err != nil {
+		return nil, err
+	}
+
+	me := s.GetUser(ctx)
+	if exists.Owner != me.Id || me.AccountType != user.ADMIN {
+		return nil, status.Error(codes.PermissionDenied, "Forbidden")
+	}
+
+	if err := s.CommunityRepo.DeleteById(ctx, in.CommunityId); err != nil {
+		return nil, err
+	}
+
+	return &protobuf.ImageIdResp{
+		ImageId:      exists.ImageId,
+		BackgroundId: exists.BackgroundId,
+	}, nil
+}
