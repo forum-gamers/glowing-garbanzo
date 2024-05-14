@@ -75,3 +75,8 @@ func (r *MemberRepoImpl) Create(ctx context.Context, data Member) (id string, er
 	).Scan(&id)
 	return
 }
+
+func (r *MemberRepoImpl) DeleteOne(ctx context.Context, communityId, userId string) error {
+	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE communityId = $1 AND userId = $2", base.MEMBER), communityId, userId)
+	return err
+}

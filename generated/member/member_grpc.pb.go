@@ -19,14 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	MemberService_JoinCommunity_FullMethodName = "/member.MemberService/JoinCommunity"
+	MemberService_JoinCommunity_FullMethodName  = "/member.MemberService/JoinCommunity"
+	MemberService_LeaveCommunity_FullMethodName = "/member.MemberService/LeaveCommunity"
 )
 
 // MemberServiceClient is the client API for MemberService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MemberServiceClient interface {
-	JoinCommunity(ctx context.Context, in *CreateMemberInput, opts ...grpc.CallOption) (*Message, error)
+	JoinCommunity(ctx context.Context, in *CommunityIdInput, opts ...grpc.CallOption) (*Message, error)
+	LeaveCommunity(ctx context.Context, in *CommunityIdInput, opts ...grpc.CallOption) (*Message, error)
 }
 
 type memberServiceClient struct {
@@ -37,9 +39,18 @@ func NewMemberServiceClient(cc grpc.ClientConnInterface) MemberServiceClient {
 	return &memberServiceClient{cc}
 }
 
-func (c *memberServiceClient) JoinCommunity(ctx context.Context, in *CreateMemberInput, opts ...grpc.CallOption) (*Message, error) {
+func (c *memberServiceClient) JoinCommunity(ctx context.Context, in *CommunityIdInput, opts ...grpc.CallOption) (*Message, error) {
 	out := new(Message)
 	err := c.cc.Invoke(ctx, MemberService_JoinCommunity_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) LeaveCommunity(ctx context.Context, in *CommunityIdInput, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, MemberService_LeaveCommunity_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +61,8 @@ func (c *memberServiceClient) JoinCommunity(ctx context.Context, in *CreateMembe
 // All implementations must embed UnimplementedMemberServiceServer
 // for forward compatibility
 type MemberServiceServer interface {
-	JoinCommunity(context.Context, *CreateMemberInput) (*Message, error)
+	JoinCommunity(context.Context, *CommunityIdInput) (*Message, error)
+	LeaveCommunity(context.Context, *CommunityIdInput) (*Message, error)
 	mustEmbedUnimplementedMemberServiceServer()
 }
 
@@ -58,8 +70,11 @@ type MemberServiceServer interface {
 type UnimplementedMemberServiceServer struct {
 }
 
-func (UnimplementedMemberServiceServer) JoinCommunity(context.Context, *CreateMemberInput) (*Message, error) {
+func (UnimplementedMemberServiceServer) JoinCommunity(context.Context, *CommunityIdInput) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method JoinCommunity not implemented")
+}
+func (UnimplementedMemberServiceServer) LeaveCommunity(context.Context, *CommunityIdInput) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LeaveCommunity not implemented")
 }
 func (UnimplementedMemberServiceServer) mustEmbedUnimplementedMemberServiceServer() {}
 
@@ -75,7 +90,7 @@ func RegisterMemberServiceServer(s grpc.ServiceRegistrar, srv MemberServiceServe
 }
 
 func _MemberService_JoinCommunity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateMemberInput)
+	in := new(CommunityIdInput)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -87,7 +102,25 @@ func _MemberService_JoinCommunity_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: MemberService_JoinCommunity_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).JoinCommunity(ctx, req.(*CreateMemberInput))
+		return srv.(MemberServiceServer).JoinCommunity(ctx, req.(*CommunityIdInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_LeaveCommunity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommunityIdInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).LeaveCommunity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemberService_LeaveCommunity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).LeaveCommunity(ctx, req.(*CommunityIdInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -102,6 +135,10 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "JoinCommunity",
 			Handler:    _MemberService_JoinCommunity_Handler,
+		},
+		{
+			MethodName: "LeaveCommunity",
+			Handler:    _MemberService_LeaveCommunity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

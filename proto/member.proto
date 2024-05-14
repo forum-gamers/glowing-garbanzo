@@ -4,7 +4,7 @@ package member;
 
 option go_package = "./generated/member";
 
-message CreateMemberInput {
+message CommunityIdInput {
   string communityId = 1;
 }
 
@@ -13,5 +13,6 @@ message Message {
 }
 
 service MemberService {
-  rpc JoinCommunity(CreateMemberInput) returns (Message) {}
+  rpc JoinCommunity(CommunityIdInput) returns (Message) {}
+  rpc LeaveCommunity(CommunityIdInput) returns (Message) {}
 }

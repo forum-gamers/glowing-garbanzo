@@ -11,6 +11,7 @@ type MemberRepo interface {
 	FindByCommunityId(ctx context.Context, id string) ([]Member, error)
 	FindByCommunityIdAndUserId(ctx context.Context, communityId, userId string) (Member, error)
 	Create(ctx context.Context, data Member) (string, error)
+	DeleteOne(ctx context.Context, communityId, userId string) error
 }
 
 type MemberRepoImpl struct {

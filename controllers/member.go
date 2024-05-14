@@ -21,11 +21,12 @@ type MemberService struct {
 	MemberRepo    member.MemberRepo
 }
 
-func (s *MemberService) JoinCommunity(ctx context.Context, in *protobuf.CreateMemberInput) (*protobuf.Message, error) {
+func (s *MemberService) JoinCommunity(ctx context.Context, in *protobuf.CommunityIdInput) (*protobuf.Message, error) {
 	if in.CommunityId == "" {
 		return nil, status.Error(codes.InvalidArgument, "communityId is required")
 	}
 
+	// TODO refactor this implementation to be a single query
 	if _, err := s.CommunityRepo.FindById(ctx, in.CommunityId); err != nil {
 		return nil, err
 	}
@@ -40,15 +41,35 @@ func (s *MemberService) JoinCommunity(ctx context.Context, in *protobuf.CreateMe
 		return nil, status.Error(codes.AlreadyExists, "data is already exists")
 	}
 
-	payload := member.Member{
+	if _, err := s.MemberRepo.Create(ctx, member.Member{
 		UserId:      userId,
 		CommunityId: in.CommunityId,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
-	}
-	if _, err := s.MemberRepo.Create(ctx, payload); err != nil {
+	}); err != nil {
 		return nil, err
 	}
 
+	return &protobuf.Message{Message: "success"}, nil
+}
+
+func (s *MemberService) LeaveCommunity(ctx context.Context, in *protobuf.CommunityIdInput) (*protobuf.Message, error) {
+	if in.CommunityId == "" {
+		return nil, status.Error(codes.InvalidArgument, "communityId is required")
+	}
+
+	userId := s.GetUser(ctx).Id
+	communityData, err := s.CommunityRepo.FindById(ctx, in.CommunityId)
+	if err != nil {
+		return nil, err
+	}
+
+	if communityData.Owner == userId {
+		return nil, status.Error(codes.FailedPrecondition, "cannot leave community, please transfer the ownership first")
+	}
+
+	if err := s.MemberRepo.DeleteOne(ctx, communityData.Id, userId); err != nil {
+		return nil, err
+	}
 	return &protobuf.Message{Message: "success"}, nil
 }
