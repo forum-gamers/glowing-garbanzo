@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-func generateInsertQueryAndValue(table DBNAME, data any) (string, []any) {
-	val := reflect.ValueOf(data).Elem()
+func GenerateInsertQueryAndValue(table DBNAME, data any) (string, []any) {
+	val := reflect.ValueOf(data)
 	typ := val.Type()
 
 	var columns, placeholders []string

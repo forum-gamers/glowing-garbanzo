@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package member;
+
+option go_package = "./generated/member";
+
+message CreateMemberInput {
+  string communityId = 1;
+}

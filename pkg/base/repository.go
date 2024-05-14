@@ -2,6 +2,7 @@ package base
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"reflect"
 
@@ -20,7 +21,7 @@ func (r *BaseRepoImpl) CreateData(ctx context.Context, table DBNAME, data any) (
 		return
 	}
 
-	query, values := generateInsertQueryAndValue(table, data)
+	query, values := GenerateInsertQueryAndValue(table, data)
 	row := r.Db.QueryRowContext(ctx, query, values...)
 
 	if err = row.Scan(&id); err != nil {
@@ -33,4 +34,8 @@ func (r *BaseRepoImpl) CreateData(ctx context.Context, table DBNAME, data any) (
 func (r *BaseRepoImpl) DeleteById(ctx context.Context, table DBNAME, id string) error {
 	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE id = $1", table), id)
 	return err
+}
+
+func (r *BaseRepoImpl) StartTransaction(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error) {
+	return r.Db.BeginTx(ctx, opts)
 }

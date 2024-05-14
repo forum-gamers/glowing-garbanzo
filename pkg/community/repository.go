@@ -2,6 +2,7 @@ package community
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/forum-gamers/glowing-garbanzo/database"
@@ -104,4 +105,8 @@ func (r *CommunityRepoImpl) UpdateBackground(ctx context.Context, id, background
 func (r *CommunityRepoImpl) UpdateDesc(ctx context.Context, id, text string) error {
 	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("UPDATE %s SET description = $1 WHERE id = $2", base.COMMUNITY), text, id)
 	return err
+}
+
+func (r *CommunityRepoImpl) StartTransaction(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error) {
+	return r.BaseRepo.StartTransaction(ctx, opts)
 }

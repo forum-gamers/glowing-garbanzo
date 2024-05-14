@@ -15,6 +15,7 @@ type CommunityRepo interface {
 	UpdateImage(ctx context.Context, id, imageUrl, imageId string) error
 	UpdateBackground(ctx context.Context, id, backgroundUrl, backgroundId string) error
 	UpdateDesc(ctx context.Context, id, text string) error
+	StartTransaction(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 }
 
 type CommunityRepoImpl struct {

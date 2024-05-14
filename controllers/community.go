@@ -7,7 +7,9 @@ import (
 
 	protobuf "github.com/forum-gamers/glowing-garbanzo/generated/community"
 	h "github.com/forum-gamers/glowing-garbanzo/helpers"
+	"github.com/forum-gamers/glowing-garbanzo/pkg/base"
 	"github.com/forum-gamers/glowing-garbanzo/pkg/community"
+	"github.com/forum-gamers/glowing-garbanzo/pkg/member"
 	"github.com/forum-gamers/glowing-garbanzo/pkg/user"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -34,9 +36,16 @@ func (s *CommunityService) CreateCommunity(ctx context.Context, req *protobuf.Cr
 		return nil, status.Error(codes.AlreadyExists, "data is already exists")
 	}
 
+	tx, err := s.CommunityRepo.StartTransaction(ctx, nil)
+	if err != nil {
+		tx.Rollback()
+		return nil, status.Error(codes.Unavailable, "failed to open transaction")
+	}
+
+	userId := s.GetUser(ctx).Id
 	payload := community.Community{
 		Name:          req.Name,
-		Owner:         s.GetUser(ctx).Id,
+		Owner:         userId,
 		Description:   req.Desc,
 		ImageUrl:      req.ImageUrl,
 		ImageId:       req.ImageId,
@@ -45,10 +54,27 @@ func (s *CommunityService) CreateCommunity(ctx context.Context, req *protobuf.Cr
 		BackgroundUrl: req.BackgroundUrl,
 		BackgroundId:  req.BackgroundId,
 	}
-	if err := s.CommunityRepo.Create(ctx, &payload); err != nil {
-		return nil, err
+
+	query, values := base.GenerateInsertQueryAndValue(base.COMMUNITY, payload)
+	if err := tx.QueryRowContext(ctx, query, values...).Scan(&payload.Id); err != nil {
+		tx.Rollback()
+		return nil, status.Error(codes.Unavailable, base.DB_UNAVAILABLE)
 	}
 
+	member := member.Member{
+		UserId:      userId,
+		CommunityId: payload.Id,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	query, values = base.GenerateInsertQueryAndValue(base.MEMBER, member)
+	if err := tx.QueryRowContext(ctx, query, values...).Scan(&member.Id); err != nil {
+		tx.Rollback()
+		return nil, status.Error(codes.Unavailable, base.DB_UNAVAILABLE)
+	}
+
+	tx.Commit()
 	return &protobuf.Community{
 		Id:            payload.Id,
 		Name:          payload.Name,
