@@ -35,26 +35,30 @@ func (s *CommunityService) CreateCommunity(ctx context.Context, req *protobuf.Cr
 	}
 
 	payload := community.Community{
-		Name:        req.Name,
-		Owner:       s.GetUser(ctx).Id,
-		Description: req.Desc,
-		ImageUrl:    req.ImageUrl,
-		ImageId:     req.ImageId,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		Name:          req.Name,
+		Owner:         s.GetUser(ctx).Id,
+		Description:   req.Desc,
+		ImageUrl:      req.ImageUrl,
+		ImageId:       req.ImageId,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
+		BackgroundUrl: req.BackgroundUrl,
+		BackgroundId:  req.BackgroundId,
 	}
 	if err := s.CommunityRepo.Create(ctx, &payload); err != nil {
 		return nil, err
 	}
 
 	return &protobuf.Community{
-		Id:          payload.Id,
-		Name:        payload.Name,
-		ImageUrl:    payload.ImageUrl,
-		ImageId:     payload.ImageId,
-		Description: payload.Description,
-		CreatedAt:   payload.CreatedAt.String(),
-		UpdatedAt:   payload.UpdatedAt.String(),
-		Owner:       payload.Owner,
+		Id:            payload.Id,
+		Name:          payload.Name,
+		ImageUrl:      payload.ImageUrl,
+		ImageId:       payload.ImageId,
+		Description:   payload.Description,
+		CreatedAt:     payload.CreatedAt.String(),
+		UpdatedAt:     payload.UpdatedAt.String(),
+		Owner:         payload.Owner,
+		BackgroundUrl: payload.BackgroundUrl,
+		BackgroundId:  payload.BackgroundId,
 	}, nil
 }

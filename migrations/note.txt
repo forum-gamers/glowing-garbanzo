@@ -3,3 +3,6 @@ to run this project on local
 - export path
 
 run script `migrate -source file://migrations -database {connection_url} up`
+                                                                ^
+                                                                |
+                                postgres://apple:password@localhost:5432/forum-gamers-community?sslmode=disable

@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	CommunityService_CreateCommunity_FullMethodName = "/community.CommunityService/CreateCommunity"
+	CommunityService_DeleteCommunity_FullMethodName = "/community.CommunityService/DeleteCommunity"
 )
 
 // CommunityServiceClient is the client API for CommunityService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommunityServiceClient interface {
 	CreateCommunity(ctx context.Context, in *CreateCommunityInput, opts ...grpc.CallOption) (*Community, error)
+	DeleteCommunity(ctx context.Context, in *NoArgument, opts ...grpc.CallOption) (*ImageIdResp, error)
 }
 
 type communityServiceClient struct {
@@ -46,11 +48,21 @@ func (c *communityServiceClient) CreateCommunity(ctx context.Context, in *Create
 	return out, nil
 }
 
+func (c *communityServiceClient) DeleteCommunity(ctx context.Context, in *NoArgument, opts ...grpc.CallOption) (*ImageIdResp, error) {
+	out := new(ImageIdResp)
+	err := c.cc.Invoke(ctx, CommunityService_DeleteCommunity_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommunityServiceServer is the server API for CommunityService service.
 // All implementations must embed UnimplementedCommunityServiceServer
 // for forward compatibility
 type CommunityServiceServer interface {
 	CreateCommunity(context.Context, *CreateCommunityInput) (*Community, error)
+	DeleteCommunity(context.Context, *NoArgument) (*ImageIdResp, error)
 	mustEmbedUnimplementedCommunityServiceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedCommunityServiceServer struct {
 
 func (UnimplementedCommunityServiceServer) CreateCommunity(context.Context, *CreateCommunityInput) (*Community, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCommunity not implemented")
+}
+func (UnimplementedCommunityServiceServer) DeleteCommunity(context.Context, *NoArgument) (*ImageIdResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCommunity not implemented")
 }
 func (UnimplementedCommunityServiceServer) mustEmbedUnimplementedCommunityServiceServer() {}
 
@@ -92,6 +107,24 @@ func _CommunityService_CreateCommunity_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommunityService_DeleteCommunity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoArgument)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).DeleteCommunity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_DeleteCommunity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).DeleteCommunity(ctx, req.(*NoArgument))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommunityService_ServiceDesc is the grpc.ServiceDesc for CommunityService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var CommunityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateCommunity",
 			Handler:    _CommunityService_CreateCommunity_Handler,
+		},
+		{
+			MethodName: "DeleteCommunity",
+			Handler:    _CommunityService_DeleteCommunity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

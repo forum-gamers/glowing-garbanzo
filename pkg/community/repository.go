@@ -21,7 +21,18 @@ func (r *CommunityRepoImpl) FindByName(ctx context.Context, name string) (result
 	defer rows.Close()
 
 	for rows.Next() {
-		if err = rows.Scan(&result.Id, &result.Name, &result.ImageUrl, &result.ImageId, &result.Description, &result.Owner, &result.CreatedAt, &result.UpdatedAt); err != nil {
+		if err = rows.Scan(
+			&result.Id,
+			&result.Name,
+			&result.ImageUrl,
+			&result.ImageId,
+			&result.Description,
+			&result.Owner,
+			&result.CreatedAt,
+			&result.UpdatedAt,
+			&result.BackgroundUrl,
+			&result.BackgroundId,
+		); err != nil {
 			return
 		}
 	}

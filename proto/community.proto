@@ -9,6 +9,8 @@ message CreateCommunityInput {
   string imageUrl = 2;
   string imageId = 3;
   string desc = 4;
+  string backgroundUrl = 5;
+  string backgroundId = 6;
 }
 
 message Community {
@@ -20,8 +22,17 @@ message Community {
   string owner = 6;
   string createdAt = 7;
   string updatedAt = 8;
+  string backgroundUrl = 9;
+  string backgroundId = 10;
 }
+
+message ImageIdResp {
+  string imageId = 1;
+}
+
+message NoArgument {}
 
 service CommunityService {
   rpc CreateCommunity(CreateCommunityInput) returns (Community) {}
+  rpc DeleteCommunity(NoArgument) returns (ImageIdResp) {}
 }
