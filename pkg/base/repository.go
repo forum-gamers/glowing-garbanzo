@@ -22,9 +22,7 @@ func (r *BaseRepoImpl) CreateData(ctx context.Context, table DBNAME, data any) (
 	}
 
 	query, values := GenerateInsertQueryAndValue(table, data)
-	row := r.Db.QueryRowContext(ctx, query, values...)
-
-	if err = row.Scan(&id); err != nil {
+	if err = r.Db.QueryRowContext(ctx, query, values...).Scan(&id); err != nil {
 		err = h.NewAppError(codes.Unavailable, DB_UNAVAILABLE)
 		return
 	}
