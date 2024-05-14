@@ -24,6 +24,7 @@ const (
 	CommunityService_UpdateImage_FullMethodName      = "/community.CommunityService/UpdateImage"
 	CommunityService_UpdateBackground_FullMethodName = "/community.CommunityService/UpdateBackground"
 	CommunityService_UpdateDesc_FullMethodName       = "/community.CommunityService/UpdateDesc"
+	CommunityService_ChangeOwnership_FullMethodName  = "/community.CommunityService/ChangeOwnership"
 )
 
 // CommunityServiceClient is the client API for CommunityService service.
@@ -35,6 +36,7 @@ type CommunityServiceClient interface {
 	UpdateImage(ctx context.Context, in *UpdateImgInput, opts ...grpc.CallOption) (*Community, error)
 	UpdateBackground(ctx context.Context, in *UpdateImgInput, opts ...grpc.CallOption) (*Community, error)
 	UpdateDesc(ctx context.Context, in *TextInput, opts ...grpc.CallOption) (*Community, error)
+	ChangeOwnership(ctx context.Context, in *ChangeOwnershipInput, opts ...grpc.CallOption) (*Community, error)
 }
 
 type communityServiceClient struct {
@@ -90,6 +92,15 @@ func (c *communityServiceClient) UpdateDesc(ctx context.Context, in *TextInput, 
 	return out, nil
 }
 
+func (c *communityServiceClient) ChangeOwnership(ctx context.Context, in *ChangeOwnershipInput, opts ...grpc.CallOption) (*Community, error) {
+	out := new(Community)
+	err := c.cc.Invoke(ctx, CommunityService_ChangeOwnership_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommunityServiceServer is the server API for CommunityService service.
 // All implementations must embed UnimplementedCommunityServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type CommunityServiceServer interface {
 	UpdateImage(context.Context, *UpdateImgInput) (*Community, error)
 	UpdateBackground(context.Context, *UpdateImgInput) (*Community, error)
 	UpdateDesc(context.Context, *TextInput) (*Community, error)
+	ChangeOwnership(context.Context, *ChangeOwnershipInput) (*Community, error)
 	mustEmbedUnimplementedCommunityServiceServer()
 }
 
@@ -120,6 +132,9 @@ func (UnimplementedCommunityServiceServer) UpdateBackground(context.Context, *Up
 }
 func (UnimplementedCommunityServiceServer) UpdateDesc(context.Context, *TextInput) (*Community, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDesc not implemented")
+}
+func (UnimplementedCommunityServiceServer) ChangeOwnership(context.Context, *ChangeOwnershipInput) (*Community, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeOwnership not implemented")
 }
 func (UnimplementedCommunityServiceServer) mustEmbedUnimplementedCommunityServiceServer() {}
 
@@ -224,6 +239,24 @@ func _CommunityService_UpdateDesc_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommunityService_ChangeOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeOwnershipInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunityServiceServer).ChangeOwnership(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommunityService_ChangeOwnership_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunityServiceServer).ChangeOwnership(ctx, req.(*ChangeOwnershipInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommunityService_ServiceDesc is the grpc.ServiceDesc for CommunityService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +283,10 @@ var CommunityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateDesc",
 			Handler:    _CommunityService_UpdateDesc_Handler,
+		},
+		{
+			MethodName: "ChangeOwnership",
+			Handler:    _CommunityService_ChangeOwnership_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

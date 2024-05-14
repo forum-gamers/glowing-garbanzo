@@ -16,6 +16,7 @@ type CommunityRepo interface {
 	UpdateBackground(ctx context.Context, id, backgroundUrl, backgroundId string) error
 	UpdateDesc(ctx context.Context, id, text string) error
 	StartTransaction(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
+	ChangeOwnerShip(ctx context.Context, communityId, targetId string) error
 }
 
 type CommunityRepoImpl struct {

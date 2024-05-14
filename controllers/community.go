@@ -220,3 +220,43 @@ func (s *CommunityService) UpdateDesc(ctx context.Context, in *protobuf.TextInpu
 		BackgroundId:  data.BackgroundId,
 	}, nil
 }
+
+func (s *CommunityService) ChangeOwnership(ctx context.Context, in *protobuf.ChangeOwnershipInput) (*protobuf.Community, error) {
+	if in.CommunityId == "" {
+		return nil, status.Error(codes.InvalidArgument, COMMUNITYID_IS_REQUIRED)
+	}
+
+	if in.TargetId == "" {
+		return nil, status.Error(codes.InvalidArgument, "targetId is required")
+	}
+
+	data, err := s.CommunityRepo.FindById(ctx, in.CommunityId)
+	if err != nil {
+		return nil, err
+	}
+
+	if data.Owner != s.GetUser(ctx).Id {
+		return nil, status.Error(codes.PermissionDenied, "Forbidden")
+	}
+
+	if data.Owner == in.TargetId {
+		return nil, status.Error(codes.AlreadyExists, "user is already become the owner")
+	}
+
+	if err := s.CommunityRepo.ChangeOwnerShip(ctx, data.Id, in.TargetId); err != nil {
+		return nil, err
+	}
+
+	return &protobuf.Community{
+		Id:            data.Id,
+		Name:          data.Name,
+		ImageUrl:      data.ImageUrl,
+		ImageId:       data.ImageId,
+		Description:   data.Description,
+		CreatedAt:     data.CreatedAt.String(),
+		UpdatedAt:     data.UpdatedAt.String(),
+		Owner:         in.TargetId,
+		BackgroundUrl: data.BackgroundUrl,
+		BackgroundId:  data.BackgroundId,
+	}, nil
+}

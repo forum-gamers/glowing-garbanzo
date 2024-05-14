@@ -46,10 +46,16 @@ message TextInput {
   string communityId = 2;
 }
 
+message ChangeOwnershipInput {
+  string communityId = 1;
+  string targetId = 2;
+}
+
 service CommunityService {
   rpc CreateCommunity(CreateCommunityInput) returns (Community) {}
   rpc DeleteCommunity(CommunityIdInput) returns (ImageIdResp) {}
   rpc UpdateImage(UpdateImgInput) returns (Community) {}
   rpc UpdateBackground(UpdateImgInput) returns (Community) {}
   rpc UpdateDesc(TextInput) returns (Community) {}
+  rpc ChangeOwnership(ChangeOwnershipInput) returns (Community) {}
 }

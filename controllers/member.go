@@ -23,7 +23,7 @@ type MemberService struct {
 
 func (s *MemberService) JoinCommunity(ctx context.Context, in *protobuf.CommunityIdInput) (*protobuf.Message, error) {
 	if in.CommunityId == "" {
-		return nil, status.Error(codes.InvalidArgument, "communityId is required")
+		return nil, status.Error(codes.InvalidArgument, COMMUNITYID_IS_REQUIRED)
 	}
 
 	// TODO refactor this implementation to be a single query
@@ -55,7 +55,7 @@ func (s *MemberService) JoinCommunity(ctx context.Context, in *protobuf.Communit
 
 func (s *MemberService) LeaveCommunity(ctx context.Context, in *protobuf.CommunityIdInput) (*protobuf.Message, error) {
 	if in.CommunityId == "" {
-		return nil, status.Error(codes.InvalidArgument, "communityId is required")
+		return nil, status.Error(codes.InvalidArgument, COMMUNITYID_IS_REQUIRED)
 	}
 
 	userId := s.GetUser(ctx).Id

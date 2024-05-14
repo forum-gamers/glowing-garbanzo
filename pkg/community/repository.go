@@ -110,3 +110,8 @@ func (r *CommunityRepoImpl) UpdateDesc(ctx context.Context, id, text string) err
 func (r *CommunityRepoImpl) StartTransaction(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error) {
 	return r.BaseRepo.StartTransaction(ctx, opts)
 }
+
+func (r *CommunityRepoImpl) ChangeOwnerShip(ctx context.Context, communityId, targetId string) error {
+	_, err := r.Db.ExecContext(ctx, fmt.Sprintf("UPDATE %s SET owner = $1 WHERE id = $2", base.COMMUNITY), targetId, communityId)
+	return err
+}
