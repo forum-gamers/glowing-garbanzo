@@ -58,4 +58,5 @@ service CommunityService {
   rpc UpdateBackground(UpdateImgInput) returns (Community) {}
   rpc UpdateDesc(TextInput) returns (Community) {}
   rpc ChangeOwnership(ChangeOwnershipInput) returns (Community) {}
+  rpc FindById(CommunityIdInput) returns (Community) {}
 }

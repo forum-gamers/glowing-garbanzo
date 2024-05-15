@@ -260,3 +260,27 @@ func (s *CommunityService) ChangeOwnership(ctx context.Context, in *protobuf.Cha
 		BackgroundId:  data.BackgroundId,
 	}, nil
 }
+
+func (s *CommunityService) FindById(ctx context.Context, in *protobuf.CommunityIdInput) (*protobuf.Community, error) {
+	if in.CommunityId == "" {
+		return nil, status.Error(codes.InvalidArgument, COMMUNITYID_IS_REQUIRED)
+	}
+
+	data, err := s.CommunityRepo.FindById(ctx, in.CommunityId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &protobuf.Community{
+		Id:            data.Id,
+		Name:          data.Name,
+		ImageUrl:      data.ImageUrl,
+		ImageId:       data.ImageId,
+		Description:   data.Description,
+		CreatedAt:     data.CreatedAt.String(),
+		UpdatedAt:     data.UpdatedAt.String(),
+		Owner:         data.Owner,
+		BackgroundUrl: data.BackgroundUrl,
+		BackgroundId:  data.BackgroundId,
+	}, nil
+}
